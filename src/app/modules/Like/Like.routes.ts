@@ -13,7 +13,7 @@ router.post(
 // get all my like id
 
 router.get(
-  "/my-likes",
+  "/",
   auth(UserRole.ADMIN, UserRole.USER),
   likeController.getAllMyLikeIds
 );

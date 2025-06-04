@@ -30,16 +30,20 @@ import { boolean } from "zod";
 
 
 export interface IUserUpdate {
+  email?:string,
+  username?:string
   firstName?:string,
   lastName?:string,
-  dob?:Date,
+  dob?:String,
   about?:string,
   interests?:InterestType[],
   budgetMin?:number,
   budgetMax?:number,
   travelPartner?:TravelPartner,
-  gender:GenderLabel,
-  gender_sub_categories?:GenderSubCategory[],  
+  gender:{
+    label:GenderLabel,
+    sub_categories?:GenderSubCategory[]
+  },
   genderVisibility?:boolean,
   tripType?:TripType,
   tripDuration?:TripDuration,
@@ -62,8 +66,10 @@ export interface IUser {
   budgetMin:number,
   budgetMax:number,
   travelPartne:TravelPartner,
-  gender:GenderLabel,
-  gender_sub_categories?:GenderSubCategory[],
+ gender:{
+    label:GenderLabel,
+    sub_category?:GenderSubCategory[]
+  },
   tripType:TripType,
   tripDuration:TripDuration,
   tripContinent:string,

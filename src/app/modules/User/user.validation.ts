@@ -1,4 +1,4 @@
-import { GenderLabel, GenderSubCategory, InterestType, TripDuration, TripType } from "@prisma/client";
+import { GenderLabel, GenderSubCategory, InterestType, TravelPartner, TripDuration, TripType } from "@prisma/client";
 import { z } from "zod";
 
 const CreateUserValidationSchema = z.object({
@@ -63,8 +63,11 @@ const userUpdateSchema = z.object({
   lastName:z.string().optional(),
   dob:z.string({required_error:"Date of birth is required"}).optional(),
   residence_country:z.string().nonempty("country is required").optional(),
-  gender: z.nativeEnum(GenderLabel).optional(),
-  gender_sub_categories:z.array(z.nativeEnum(GenderSubCategory)).optional(),
+  gender: z.object({
+    label:z.nativeEnum(GenderLabel),
+    sub_categories:z.array(z.nativeEnum(GenderSubCategory)).optional()
+  }).optional(),
+  tripPartner:z.nativeEnum(TravelPartner).optional(),
   tripType:z.nativeEnum(TripType).optional(),
   tripDuration:z.nativeEnum(TripDuration).optional(),
   tripContinent:z.string().nonempty("Continent is required").optional(),

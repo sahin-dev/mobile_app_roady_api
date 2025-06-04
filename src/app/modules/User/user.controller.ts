@@ -45,7 +45,7 @@ const checkEmail = catchAsync(async (req:Request, res: Response) =>{
   sendResponse(res, {
     statusCode:httpStatus.OK,
     success:true,
-    message:"Email checked",
+    message:"Email is available",
     data:result
   })
 })
@@ -55,7 +55,7 @@ const checkUsername = catchAsync (async (req:Request, res:Response)=>{
   sendResponse(res,{
     statusCode:httpStatus.OK,
     success:true,
-    message:"Username checked",
+    message:"Username is available",
     data:result
   })
 })

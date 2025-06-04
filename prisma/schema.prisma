@@ -29,8 +29,8 @@ model User {
 
   superMessages   Int @default(3)
 
-  gender            GenderLabel?
-  gender_sub_categories GenderSubCategory[]
+  gender            GenderCategory?
+
   genderVisibility  Boolean?        @default(true)
   tripType          TripType?
   tripDuration      TripDuration?
@@ -263,12 +263,10 @@ model Room {
 
 
 
-model GenderCategory {
-  id          String              @id @default(auto()) @map("_id") @db.ObjectId
+type GenderCategory {
+
   label       String
-  categories GenderSubCategory[]
-  createdAt   DateTime
-  updatedAt   DateTime            @updatedAt
+  sub_categories GenderSubCategory[]
 
 }
 
@@ -302,6 +300,7 @@ enum TripDuration {
 }
 
 enum AgeGroup {
+  
   EIGHTEEN_TO_TWENTYFIVE
   TWENTYFIVE_TO_THIRTYFIVE
   THIRTYFIVE_TO_FOURTYFIVE

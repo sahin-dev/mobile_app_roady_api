@@ -181,14 +181,12 @@ const getMyProfile = async (userId: string) => {
       distance:true,
       genderVisibility:true,
       gender:true,
-      gender_sub_categories:true,
       
     }
   });
   
   if (userProfile && userProfile?.genderVisibility === false){
     userProfile.gender = null;
-    userProfile.gender_sub_categories = [];
   }
   
 

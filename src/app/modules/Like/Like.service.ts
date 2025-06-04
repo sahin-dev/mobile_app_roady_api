@@ -84,6 +84,8 @@ const toggleLike = async (id: string, user: any) => {
   return prismaTransaction;
 };
 
+//get all users who liked me
+
 const getAllMyLikedIds = async (id: string) => {
 
   const findUser = await prisma.user.findUnique({ where: { id: id } });
@@ -93,14 +95,18 @@ const getAllMyLikedIds = async (id: string) => {
   }
   const result = await prisma.like.findMany({
     where: {
-      senderId: id,
+      receiverId: id,
     },
-    select: {
-      receiverId: true,
+    include:{sender: { select: { id: true, name: true, photos: true} }
+    },
+    orderBy: {
+      createdAt: "desc",
     },
   });
-  return result.map((item) => item.receiverId);
+  return result.map((item) => ({id:item.sender.id,name:item.sender.name,photos:item.sender.photos})); // Return only the IDs of the liked users
 };
+
+
 
 const getWhoLikeMe = async (id: string) => {  
   

@@ -78,7 +78,7 @@ const checkEmail = async ({email}:{email:string})=>{
   if (user.length>0){
     throw new ApiError(httpStatus.CONFLICT, "User with this email already exist")
   }
-  return {message:"email is accepted"}
+  return {message:"email is available"}
 }
 
 const checkUsername = async ({username}:{username:string})=>{
@@ -86,7 +86,7 @@ const checkUsername = async ({username}:{username:string})=>{
   if (user.length>0){
     throw new ApiError(httpStatus.CONFLICT, "User with this username already exist")
   }
-  return {message:"username is accepted"}
+  return {message:"username is available"}
 }
 
 const generateSignUpOtp = async ({phone}:{phone:string})=>{
@@ -98,7 +98,7 @@ const generateSignUpOtp = async ({phone}:{phone:string})=>{
 }
 
 // Create a new user in the database.
-const createUserIntoDb = async (userId:string,payload:IUser) => {
+const createUserIntoDb = async (userId:string,payload:IUserUpdate) => {
   const user = await prisma.user.findUnique({where:{id:userId}})
   console.log(user)
   if (!user) { 
@@ -106,7 +106,8 @@ const createUserIntoDb = async (userId:string,payload:IUser) => {
    }
 
 
-   if (payload.username){
+   if (payload.username) {
+    // Check if the username already exists
     const existingUser = await prisma.user.findFirst({where:{username:payload.username}})
     if (existingUser){
       throw new ApiError(httpStatus.CONFLICT, "User with this username already exist")
@@ -142,11 +143,17 @@ const createUserIntoDb = async (userId:string,payload:IUser) => {
   // const otpExpiry = new Date(Date.now() + 15 * 60 * 1000); // OTP expires in 15 minutes
 
   // Create the user and save the OTP and expiry in the database
-  const age  = calculateAge(payload.dob)
+  const age = payload.dob ? calculateAge(new Date(String(payload.dob))) : undefined;
   
+  // Ensure dob is of type string (not String object)
+  const payloadToUpdate = {
+    ...payload,
+    dob: payload.dob ? String(payload.dob) : undefined,
+  };
+
   const newUser = await prisma.user.update({where:{id:userId},
     data: {
-     ...payload,
+     ...payloadToUpdate,
       age,
       isCompleteProfile: true,
       phone:user.phone,
@@ -159,8 +166,7 @@ const createUserIntoDb = async (userId:string,payload:IUser) => {
       phone: true,
       email:true,
       username:true,
-      gender: true,
-      gender_sub_categories:true,   
+      gender: true,  
       // otp: true,
       createdAt: true,
       updatedAt: true,
@@ -381,7 +387,13 @@ const updateUserIntoDb = async (payload: IUserUpdate, id: string) => {
     where: {
       id: userInfo.id,
     },
-    data: {...payload,username:userInfo.username,email:userInfo.email,phone:userInfo.phone},
+    data: {
+      ...payload,
+      dob: payload.dob !== undefined ? String(payload.dob) : undefined,
+      username: userInfo.username,
+      email: userInfo.email,
+      phone: userInfo.phone
+    },
     select: {
       id: true,
       email: true,
@@ -411,6 +423,7 @@ const updateUserIntoDb = async (payload: IUserUpdate, id: string) => {
 
 
 const updateUser = async (payload: IUserUpdate, userId: string) => {
+  let dob = new Date
   const user = await prisma.user.findUnique({
     where: { id: userId },
   });
@@ -421,16 +434,14 @@ const updateUser = async (payload: IUserUpdate, userId: string) => {
 
   const updateData: any = {
     ...payload,
+    dob,
     status: UserStatus.ACTIVE,
     // Lock immutable/sensitive fields
-    username: user.username,
-    email: user.email,
-    phone: user.phone,
   };
 
   // Auto-calculate age if dob is provided
   if (payload.dob) {
-    updateData.age = differenceInYears(new Date(), new Date(payload.dob));
+    updateData.age = differenceInYears(new Date(), new Date(payload.dob.toString()));
   }
 
   const updatedUser = await prisma.user.update({
@@ -443,7 +454,6 @@ const updateUser = async (payload: IUserUpdate, userId: string) => {
       lastName: true,
       username: true,
       gender: true,
-      gender_sub_categories:true,
       about: true,
       role: true,
       createdAt: true,
@@ -717,7 +727,7 @@ const getUserForHomePage = async (
       const distance = calculateDistance(authLat, authLong, userLat, userLong);
 
       if (distance <= maxRadius) {
-        const age = calculateAge(user.dob); // Calculate age
+        const age = calculateAge(new Date(user.dob)); // Calculate age
         return { ...user, distance: `${distance.toFixed(1)} miles`, age }; // Add age to user object
       }
       return null;
@@ -750,7 +760,7 @@ const getUserForHomePage = async (
     const allFilteredUsers = allUsers
       .map((user) => {
         if (!user.lat || !user.long || !user.dob) return null;
-        const age = calculateAge(user.dob); // Calculate age
+        const age = calculateAge(new Date(user.dob)); // Calculate age
         return { ...user, age }; // Add age to user object
       })
       .filter((user) => user !== null);
@@ -817,7 +827,9 @@ const getMyProfile = async (id: string) => {
     select: {
       id: true,
       email: true,
-      name: true,
+      username: true,
+      firstName: true,
+      lastName: true,
       phone: true,
       gender: true,
       dob: true,
@@ -863,21 +875,16 @@ const getSingleUserById = async (id:string) => {
     where: { id },
     select: {
       id: true,
+      tripContinent:true,
+      tripCountry:true,
       email: true,
       name: true,
       phone: true,
       gender: true,
       dob: true,
-      sexOrientation: true,
-      education: true,
       interests: true,
-      distance: true,
-      favoritesFood: true,
-      photos: true,
       about: true,
-      lat: true,
-      long: true,
-      isCompleteProfile: true,
+
       genderVisibility: true,
       createdAt: true,
       updatedAt: true,
@@ -885,7 +892,7 @@ const getSingleUserById = async (id:string) => {
   });
   let age
 if(user?.dob){
-   age= calculateAge(user.dob)
+   age = calculateAge(new Date(user.dob));
 }
 if (user?.genderVisibility === false) {
   user.gender = null; // Hide
