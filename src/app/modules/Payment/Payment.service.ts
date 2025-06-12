@@ -8,10 +8,11 @@ import Stripe from 'stripe';
 import prisma from '../../../shared/prisma';
 import ApiError from '../../../errors/ApiError';
 import { IUser } from '../User/user.interface';
-import { User } from '@prisma/client';
 import config from '../../../config';
 import { get } from 'http';
 import products from '../../../helpers/products';
+import { User } from '@prisma/client';
+
 
 
 
@@ -28,7 +29,7 @@ export interface IBuySubscription {
 }
 const createPrice = async (payload: any) => {
   try {
-    const result = await prisma.$transaction(async tx => {
+    const result = await prisma.$transaction(async (tx:any) => {
       // Step 1: Create Product in Stripe
       const product = await stripe.products.create({
         name: payload.name,
@@ -111,7 +112,7 @@ const updatePrice = async (id: string, payload: any) => {
     }
 
     // Step 2: Use a Prisma transaction to ensure atomicity
-    const updatedPrice = await prisma.$transaction(async tx => {
+    const updatedPrice = await prisma.$transaction(async (tx:any) => {
       // Update the price in the database
       const dbUpdatedPrice = await tx.price.update({
         where: { id },
@@ -316,7 +317,7 @@ const buySubscription = async (payload: IBuySubscription, user: JwtPayload) => {
     // Step 5: Create subscription in Stripe
     const subscription = await stripe.subscriptions.create(subscriptionParams);
     // Step 6: Handle database transaction
-    const result = await prisma.$transaction(async tx => {
+    const result = await prisma.$transaction(async (tx:any) => {
       const ExistingUser = await tx.user.findFirst({ where: { id: user.id } });
       if (!ExistingUser) {
         throw new ApiError(httpStatus.NOT_FOUND, 'User not found');
@@ -701,7 +702,7 @@ const monthlyStatistics = async (query: any) => {
   }));
 
   // Group data manually into months
-  allData.forEach(record => {
+  allData.forEach((record:any) => {
     const month = new Date(record.createdAt).getMonth(); // Extract month index (0 = Jan)
     monthlyData[month].totalRevenue += record.amount || 0; // Sum up revenue
     monthlyData[month].totalCount += 1; // Increment count
@@ -732,7 +733,7 @@ const getMemberPlanCount = async (query: any) => {
   });
 
   // Transform the result for better readability
-  const transformedResult = result.map(item => ({
+  const transformedResult = result.map((item:any) => ({
     subscriptionPlane: item.subscriptionPlane,
     count: item._count.subscriptionPlane, // Rename _count.subscriptionPlane to count
   }));
