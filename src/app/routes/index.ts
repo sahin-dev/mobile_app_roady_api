@@ -9,6 +9,7 @@ import { paymentRoutes } from "../modules/Payment/Payment.routes";
 import { DislikeRouter } from "../modules/DisLike/DisLike.routes";
 import path from "path";
 import { stripeRoutes } from "../modules/Stripe/stripe.routes";
+import { matchRoutes } from "../modules/Match/match.route";
 
 const router = Router()
 
@@ -21,7 +22,8 @@ const moduleRoutes = [
     {path:'/chats', route:chatRoutes},
     {path:'/payment',route:paymentRoutes},
     {path:'/trip', route:tripRoutes},
-    {path:'/stripe', route:stripeRoutes}
+    {path:'/stripe', route:stripeRoutes},
+    {path:"/matches", route:matchRoutes}
 ]
 
 moduleRoutes.forEach((route) => router.use(route.path, route.route));
