@@ -181,9 +181,14 @@ const getMyProfile = async (userId: string) => {
       distance:true,
       genderVisibility:true,
       gender:true,
+      status:true
       
     }
   });
+
+  if (userProfile?.status === UserStatus.INACTIVE){
+    throw new ApiError(httpStatus.NOT_FOUND, "User inactive")
+  }
   
   if (userProfile && userProfile?.genderVisibility === false){
     userProfile.gender = null;
