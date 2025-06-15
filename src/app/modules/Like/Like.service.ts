@@ -310,22 +310,22 @@ const getPeerLikes = async (
     select: { lat: true, long: true },
   });
 
-  if (!authUser || authUser.lat == null || authUser.long == null) {
-    throw new ApiError(httpStatus.NOT_FOUND, "User's location is not available");
-  }
+  // if (!authUser || authUser.lat == null || authUser.long == null) {
+  //   throw new ApiError(httpStatus.NOT_FOUND, "User's location is not available");
+  // }
 
-  const maxDistance = distanceRange ? Number(distanceRange) : null;
-  if (!maxDistance) {
-    throw new ApiError(httpStatus.BAD_REQUEST, "A valid distanceRange is required.");
-  }
+  // const maxDistance = distanceRange ? Number(distanceRange) : null;
+  // if (!maxDistance) {
+  //   throw new ApiError(httpStatus.BAD_REQUEST, "A valid distanceRange is required.");
+  // }
 
-  const currentDate = new Date();
-  const minDob = maxAge
-    ? new Date(currentDate.getFullYear() - maxAge, currentDate.getMonth(), currentDate.getDate())
-    : undefined;
-  const maxDob = minAge
-    ? new Date(currentDate.getFullYear() - minAge, currentDate.getMonth(), currentDate.getDate())
-    : undefined;
+  // const currentDate = new Date();
+  // const minDob = maxAge
+  //   ? new Date(currentDate.getFullYear() - maxAge, currentDate.getMonth(), currentDate.getDate())
+  //   : undefined;
+  // const maxDob = minAge
+  //   ? new Date(currentDate.getFullYear() - minAge, currentDate.getMonth(), currentDate.getDate())
+  //   : undefined;
 
   const peerLikes = await prisma.like.findMany({
     where: {
@@ -384,45 +384,47 @@ const getPeerLikes = async (
     },
   });
 
-  const filteredPeerLikes = peerLikes
-    .map((like) => {
-      const peerUser = like.senderId === user.id ? like.receiver : like.sender;
-      if (peerUser.lat != null && peerUser.long != null) {
-        const distance = calculateDistance(
-          Number(authUser.lat),
-          Number(authUser.long),
-          Number(peerUser.lat),
-          Number(peerUser.long)
-        );
+  // const filteredPeerLikes = peerLikes
+  //   .map((like) => {
+  //     const peerUser = like.senderId === user.id ? like.receiver : like.sender;
+  //     if (peerUser.lat != null && peerUser.long != null) {
+  //       const distance = calculateDistance(
+  //         Number(authUser.lat),
+  //         Number(authUser.long),
+  //         Number(peerUser.lat),
+  //         Number(peerUser.long)
+  //       );
 
-        if (distance <= maxDistance) {
-          return {
-            id: peerUser.id,
-            name: peerUser.name,
-            photos: peerUser.photos,
-            gender: peerUser.gender,
-            dob: peerUser.dob,
-            favoritesFood: peerUser.favoritesFood,
-            interest: peerUser.interests,
-            email: peerUser.email,
-            distance: distance.toFixed(2),
-          };
-        }
-      }
-      return null;
-    })
-    .filter((user) => user !== null);
+  //       if (distance <= maxDistance) {
+  //         return {
+  //           id: peerUser.id,
+  //           name: peerUser.name,
+  //           photos: peerUser.photos,
+  //           gender: peerUser.gender,
+  //           dob: peerUser.dob,
+  //           favoritesFood: peerUser.favoritesFood,
+  //           interest: peerUser.interests,
+  //           email: peerUser.email,
+  //           distance: distance.toFixed(2),
+  //         };
+  //       }
+  //     }
+  //     return null;
+  //   })
+  //   .filter((user) => user !== null);
 
-  const paginatedPeerLikes = filteredPeerLikes.slice(skip, skip + limit);
+  // const paginatedPeerLikes = filteredPeerLikes.slice(skip, skip + limit);
 
-  return {
-    meta: {
-      page,
-      limit,
-      total: filteredPeerLikes.length,
-    },
-    data: paginatedPeerLikes,
-  };
+  // return {
+  //   meta: {
+  //     page,
+  //     limit,
+  //     total: filteredPeerLikes.length,
+  //   },
+  //   data: paginatedPeerLikes,
+  // };
+
+  return peerLikes
 };
 //test
 
