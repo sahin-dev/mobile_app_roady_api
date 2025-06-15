@@ -44,6 +44,7 @@ export interface IUserUpdate {
     label:GenderLabel,
     sub_categories?:GenderSubCategory[]
   },
+  photos:string[],
   genderVisibility?:boolean,
   tripType?:TripType,
   tripDuration?:TripDuration,

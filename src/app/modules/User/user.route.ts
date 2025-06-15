@@ -4,6 +4,8 @@ import { UserValidation } from "./user.validation";
 import { userController } from "./user.controller";
 import auth from "../../middlewares/auth.middleware";
 import { UserRole } from "@prisma/client";
+import { fileUploader } from "../../../helpers/fileUploader";
+
 // import { fileUploader } from "../../../helpers/fileUploader";
 
 const router = express.Router();
@@ -26,7 +28,7 @@ router.post('/check-email',validateRequest(UserValidation.checkEmailSchema), use
 router.post('/check-username', userController.checkUsername)
 router.post('/set-username',auth(), validateRequest(UserValidation.setUsernameSchema), userController.setUsername)
 router.get("/:id", userController.getSingleUserById);
-router.put("/",auth(),validateRequest(UserValidation.userUpdateSchema), userController.updateUser);
+router.put("/",auth(),fileUploader.uploadMultipleImage ,validateRequest(UserValidation.userUpdateSchema), userController.updateUser);
 router.delete("/",auth(), userController.deleteUser);
 
 

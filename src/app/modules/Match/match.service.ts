@@ -6,6 +6,8 @@ import httpStatus from "http-status";
 
 
 const getMatchingUsres = async (userId:string, page:number = 1, limit:number = 10) => {
+
+  console.log(userId)
     const targetUser = await prisma.user.findUnique({where:{id:userId}})
     if (!targetUser){
       throw new ApiError(httpStatus.NOT_FOUND, "User not found")
@@ -34,55 +36,61 @@ const getMatchingUsres = async (userId:string, page:number = 1, limit:number = 1
   
   
   
-    const users = await prisma.user.findMany({
-      where:{
-        AND:[
-          {id:{not:userId}},
-          {deleted:false},
-          {status:"ACTIVE"},
-          {isCompleteProfile:true},
-          {residence_country:{equals:targetUser.residence_country}},
-          {age:{gte:ageMin, lte:ageMax}},
-          {interests:{hasSome:targetUser.interests}},
-        ]
+  //   const users = await prisma.user.findMany({
+  //     where:{
+  //       AND:[
+  //         {id:{not:userId}},
+  //         {deleted:false},
+  //         {status:"ACTIVE"},
+  //         {isCompleteProfile:true},
+  //         {residence_country:{equals:targetUser.residence_country}},
+  //         // {age:{gte:ageMin, lte:ageMax}},
+  //         {interests:{hasSome:targetUser.interests}},
+  //       ]
 
-  },
-  skip:offset,
-  take:limit,}
-  )
-  users.push(...boostedUsers)
+  // },
+  // skip:offset,
+  // take:limit,}
+  // )
+  // users.push(...boostedUsers)
 
-  const filteredUsers = users.map((user) => {
-    if (user.genderVisibility === false) {
-        user.gender = null; 
-        return user; //
-  }
-    return user
-  })
+  // const filteredUsers = users.map((user) => {
+  //   if (user.genderVisibility === false) {
+  //       user.gender = null; 
+  //       return user; //
+  // }
+  //   return user
+  // })
 
-  if (filteredUsers.length === 0) {
-    const randomUser = await prisma.user.findMany({where:{residence_country:{equals:targetUser.residence_country}, deleted:false, status:"ACTIVE", isCompleteProfile:true, id:{not:userId}}, take:limit, skip:offset})
-    if (randomUser.length === 0) {
-      throw new ApiError(httpStatus.NOT_FOUND, "No matching users found")
-    } else {
-      const result =  randomUser.map((user) => {
-        if (user.genderVisibility === false) {  
-            user.gender = null;
-            return user; // Return the user
-        }
-        return user
-      })
-      return {data:result, pagination:{page, limit, totalPages:Math.ceil(result.length / limit)}}
+  // if (filteredUsers.length === 0) {
+  //   const randomUser = await prisma.user.findMany({where:{residence_country:{equals:targetUser.residence_country}, deleted:false, status:"ACTIVE", isCompleteProfile:true, id:{not:userId}}, take:limit, skip:offset})
+  //   if (randomUser.length === 0) {
+  //     throw new ApiError(httpStatus.NOT_FOUND, "No matching users found")
+  //   } else {
+  //     const result =  randomUser.map((user) => {
+  //       if (user.genderVisibility === false) {  
+  //           user.gender = null;
+  //           return user; // Return the user
+  //       }
+  //       return user
+  //     })
+  //     // return {data:result, pagination:{page, limit, totalPages:Math.ceil(result.length / limit)}}
+  //     return users
 
-    }
+  //   }
 
-  }
+  // }
 
 
     
-  const totalPages = Math.ceil(filteredUsers.length / limit)
-  return {data:filteredUsers, pagination:{page, limit, totalPages}}
-  
+  // const totalPages = Math.ceil(filteredUsers.length / limit)
+  // return {data:users, pagination:{page, limit, totalPages}}
+
+  console.log(targetUser.residence_country)
+
+  const users = await prisma.user.findMany({where:{residence_country:{equals:targetUser.residence_country}}})
+  console.log(users)
+  return users
   
   }
   

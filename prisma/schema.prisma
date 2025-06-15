@@ -12,7 +12,7 @@ model User {
   email             String?         
   phone             String?         
   username          String?         
-  dob               DateTime?
+  dob               String?
   age              Int?
   residence_country String?
   firstName         String?
@@ -58,7 +58,7 @@ model User {
   distance       String?
 
   favoritesFood String[]
-  photos        Json?
+  photos        String[]
   appleId       String?     
   googleId      String?    
 

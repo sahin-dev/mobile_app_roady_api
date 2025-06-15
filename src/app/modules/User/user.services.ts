@@ -17,6 +17,7 @@ import { PassThrough } from "stream";
 import { calculateAge } from "../../../shared/calculateAge";
 import { generateOtp } from "../../../helpers/generateOtp";
 import { differenceInYears } from "date-fns";
+import { fileUploader } from "../../../helpers/fileUploader";
 
 
 
@@ -422,7 +423,7 @@ const updateUserIntoDb = async (payload: IUserUpdate, id: string) => {
 
 
 
-const updateUser = async (payload: IUserUpdate, userId: string) => {
+const updateUser = async (payload: IUserUpdate, userId: string, files:Express.Multer.File[]) => {
   let dob = new Date
   const user = await prisma.user.findUnique({
     where: { id: userId },
@@ -432,10 +433,24 @@ const updateUser = async (payload: IUserUpdate, userId: string) => {
     throw new ApiError(httpStatus.NOT_FOUND, `User not found with id: ${userId}`);
   }
 
+  let urls:string[] = []
+
+  if (files && files.length > 0){
+
+    files.forEach(async (file) => {
+
+      const f = await fileUploader.uploadToDigitalOcean(file)
+      urls.push(f.Location)
+    })
+
+  }
+
   const updateData: any = {
     ...payload,
     dob,
     status: UserStatus.ACTIVE,
+    photos:urls
+
     // Lock immutable/sensitive fields
   };
 
@@ -446,7 +461,7 @@ const updateUser = async (payload: IUserUpdate, userId: string) => {
 
   const updatedUser = await prisma.user.update({
     where: { id: user.id },
-    data: updateData,
+    data: {...updateData},
     select: {
       id: true,
       email: true,
