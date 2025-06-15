@@ -88,7 +88,7 @@ const getMatchingUsres = async (userId:string, page:number = 1, limit:number = 1
 
   console.log(targetUser.residence_country)
 
-  const users = await prisma.user.findMany({where:{residence_country:{equals:targetUser.residence_country}}})
+  const users = await prisma.user.findMany({where:{id:{not:userId},residence_country:{equals:targetUser.residence_country}}})
   console.log(users)
   return users
   
