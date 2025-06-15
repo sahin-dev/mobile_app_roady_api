@@ -72,8 +72,11 @@ const toggleLike = async (id: string, user: any) => {
           receiverId: id,
         },
       });
+
+      const opositeLike = await prisma.like.count({where:{receiverId: user.id, senderId:id}})
       result = {
         massage: "Like created successfully",
+        matched: opositeLike > 0? true:false,
         data: createLike,
       };
     }
