@@ -123,7 +123,7 @@ const updateUser = catchAsync(async (req: any, res: Response) => {
 const user = req.user;
 const data = JSON.parse(req.body.data)
 
-  const result = await userService.updateUser( data,user.id, req.files.images);
+  const result = await userService.updateUser( data,user.id, req.files.images || null);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
