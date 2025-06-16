@@ -77,7 +77,6 @@ const userUpdateSchema = z.object({
   budgetMax:z.number({required_error:"budget max is required"}).optional(),
   budgetMin:z.number({required_error:"Budget min is required"}).optional(),
   about:z.string().nonempty("About must be provided").optional()
-
 });
 
 const checkEmailSchema = z.object({

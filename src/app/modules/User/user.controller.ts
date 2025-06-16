@@ -2,7 +2,7 @@
 import catchAsync from "../../../shared/catchAsync";
 import sendResponse from "../../../shared/ApiResponse";
 import { userService } from "./user.services";
-import { Request, Response } from "express";
+import e, { Request, Response } from "express";
 import pick from "../../../shared/pick";
 import { userFilterableFields } from "./user.costant";
 import { User } from "@prisma/client";
@@ -121,7 +121,9 @@ const updateGenderVisibility = catchAsync(async (req:Request, res:Response)=>{
 // *! update user role and account status
 const updateUser = catchAsync(async (req: any, res: Response) => {
 const user = req.user;
-  const result = await userService.updateUser( req.body,user.id, req.files);
+const data = JSON.parse(req.body.data)
+
+  const result = await userService.updateUser( data,user.id, req.files.images);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,

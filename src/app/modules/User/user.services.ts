@@ -18,6 +18,7 @@ import { calculateAge } from "../../../shared/calculateAge";
 import { generateOtp } from "../../../helpers/generateOtp";
 import { differenceInYears } from "date-fns";
 import { fileUploader } from "../../../helpers/fileUploader";
+import { Express } from "express";
 
 
 
@@ -424,33 +425,43 @@ const updateUserIntoDb = async (payload: IUserUpdate, id: string) => {
 
 
 const updateUser = async (payload: IUserUpdate, userId: string, files:Express.Multer.File[]) => {
-  let dob = new Date
+  let dob = new Date()
+
+
   const user = await prisma.user.findUnique({
     where: { id: userId },
   });
+
+
 
   if (!user) {
     throw new ApiError(httpStatus.NOT_FOUND, `User not found with id: ${userId}`);
   }
 
-  let urls:string[] = []
+  let urls:string[] = [];
+
 
   if (files && files.length > 0){
 
-    files.forEach(async (file) => {
+      urls = await Promise.all(files.map(async (file) => {
 
-      const f = await fileUploader.uploadToDigitalOcean(file)
-      urls.push(f.Location)
-    })
+        const f = await fileUploader.uploadToDigitalOcean(file)
+        return f.Location;
 
+        }))
+        
   }
+
+  let allPhotos = user.photos.concat(urls)
+
+  
+
 
   const updateData: any = {
     ...payload,
     dob,
     status: UserStatus.ACTIVE,
-    photos:urls
-
+    photos:allPhotos
     // Lock immutable/sensitive fields
   };
 
@@ -461,20 +472,8 @@ const updateUser = async (payload: IUserUpdate, userId: string, files:Express.Mu
 
   const updatedUser = await prisma.user.update({
     where: { id: user.id },
-    data: {...updateData},
-    select: {
-      id: true,
-      email: true,
-      firstName: true,
-      lastName: true,
-      username: true,
-      gender: true,
-      about: true,
-      role: true,
-      createdAt: true,
-      updatedAt: true,
-      phone: true,
-    },
+    data: {...updateData,},
+    
   });
 
   return updatedUser;
