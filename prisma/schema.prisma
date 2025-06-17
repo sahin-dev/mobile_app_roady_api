@@ -18,10 +18,10 @@ model User {
   firstName         String?
   lastName          String?
   about             String?
-  interests         InterestType[]
+  interests         String[]
   budgetMin         Int?
   budgetMax         Int?
-  travelPartner     TravelPartner?
+  travelPartner     String?
   deleted           Boolean @default(false)
 
   boosted          Boolean @default(false)
@@ -32,8 +32,8 @@ model User {
   gender            GenderCategory?
 
   genderVisibility  Boolean?        @default(true)
-  tripType          TripType?
-  tripDuration      TripDuration?
+  tripType          String?
+  tripDuration      String?
   tripContinent  String?
   tripCountry String?
   interestAgeGroup  AgeGroup?
@@ -266,7 +266,7 @@ model Room {
 type GenderCategory {
 
   label       String
-  sub_categories GenderSubCategory[]
+  sub_categories String[]
 
 }
 

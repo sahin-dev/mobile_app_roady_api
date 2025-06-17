@@ -20,7 +20,7 @@ router.get("/me", auth(), userController.getMyProfile);
 router.post("/update-gender-visibility",auth(UserRole.USER), userController.updateGenderVisibility);
 router.post('/set-phone',auth(), userController.setUserPhone)
 router.post('/verify-set-phone',auth(), userController.verifySetUserPhone)
-// *!get all  user
+// *!get all  user 
 router.get("/", userController.getUsers);
 router.get("/get-random-user", userController.getRandomUser);
 router.get("/get-user-home",auth(), userController.getUserForHomePage);
@@ -28,7 +28,7 @@ router.post('/check-email',validateRequest(UserValidation.checkEmailSchema), use
 router.post('/check-username', userController.checkUsername)
 router.post('/set-username',auth(), validateRequest(UserValidation.setUsernameSchema), userController.setUsername)
 router.get("/:id", userController.getSingleUserById);
-router.put("/",auth(),fileUploader.uploadMultipleImage ,validateRequest(UserValidation.userUpdateSchema), userController.updateUser);
+router.put("/",auth(),fileUploader.uploadMultipleImage , userController.updateUser);
 router.delete("/",auth(), userController.deleteUser);
 
 
