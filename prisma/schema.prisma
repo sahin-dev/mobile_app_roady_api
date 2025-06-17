@@ -18,10 +18,10 @@ model User {
   firstName         String?
   lastName          String?
   about             String?
-  interests         InterestType[]
+  interests         String[]
   budgetMin         Int?
   budgetMax         Int?
-  travelPartner     TravelPartner?
+  travelPartner     String?
   deleted           Boolean @default(false)
 
   boosted          Boolean @default(false)
@@ -32,11 +32,11 @@ model User {
   gender            GenderCategory?
 
   genderVisibility  Boolean?        @default(true)
-  tripType          TripType?
-  tripDuration      TripDuration?
+  tripType          String?
+  tripDuration      String?
   tripContinent  String?
   tripCountry String?
-  interestAgeGroup  AgeGroup?
+  interestAgeGroup  String?
   otp            String?
   otpExpiresIn   DateTime?
   status            UserStatus?     @default(INACTIVE)
@@ -86,7 +86,7 @@ model User {
 
 type GenderDescription {
   label   String
-  sub_categories    GenderSubCategory[]
+  sub_categories    String[]
 
 }
 // model verifyPhoneOtp {
@@ -297,6 +297,7 @@ enum TripDuration {
   ONE_TO_THREE_WEEKS
   ONE_TO_THREE_MONTHS
   SIX_MONTHS_OR_MORE
+
 }
 
 enum AgeGroup {
