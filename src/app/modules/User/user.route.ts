@@ -28,7 +28,8 @@ router.post('/check-email',validateRequest(UserValidation.checkEmailSchema), use
 router.post('/check-username', userController.checkUsername)
 router.post('/set-username',auth(), validateRequest(UserValidation.setUsernameSchema), userController.setUsername)
 router.get("/:id", userController.getSingleUserById);
-router.put("/",auth(),fileUploader.uploadMultipleImage ,validateRequest(UserValidation.userUpdateSchema), userController.updateUser);
+router.put("/",auth(),validateRequest(UserValidation.userUpdateSchema), userController.updateUser);
+router.put("/photo", auth(), fileUploader.uploadMultipleImage, userController.updateProfilePhoto)
 router.delete("/",auth(), userController.deleteUser);
 
 

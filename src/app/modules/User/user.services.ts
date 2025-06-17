@@ -525,6 +525,42 @@ const updateUserIntoDb = async (payload: IUserUpdate, id: string) => {
 };
 
 
+const updateProfilePhoto = async (userId:string, files:Express.Multer.File[])=>{
+  const user = await prisma.user.findUnique({
+    where:{id:userId}
+  })
+
+  if (!user){
+    throw new ApiError(httpStatus.NOT_FOUND, "user not found")
+  }
+
+  if (files && files.length <= 0)
+{
+  throw new ApiError(httpStatus.BAD_REQUEST, "No files detected")
+}
+  let urls:string[] = [];
+
+
+  if (files && files.length > 0){
+
+      urls = await Promise.all(files.map(async (file) => {
+
+        const f = await fileUploader.uploadToDigitalOcean(file)
+        return f.Location;
+
+        }))
+        
+  }
+
+  let allPhotos = user.photos.concat(urls)
+
+  const updatedUser = await prisma.user.update({where:{id:userId}, data:{photos: allPhotos}})
+
+  return updatedUser
+
+
+}
+
 
 
 
@@ -542,21 +578,7 @@ const updateUser = async (payload: IUserUpdate, userId: string, files:Express.Mu
     throw new ApiError(httpStatus.NOT_FOUND, `User not found with id: ${userId}`);
   }
 
-  let urls:string[] = [];
-
-
-  if (files && files.length > 0){
-
-      urls = await Promise.all(files.map(async (file) => {
-
-        const f = await fileUploader.uploadToDigitalOcean(file)
-        return f.Location;
-
-        }))
-        
-  }
-
-  let allPhotos = user.photos.concat(urls)
+  
 
   let data = {
     
@@ -677,7 +699,6 @@ if (payload.travelPartner){
     ...payload,
     dob,
     status: UserStatus.ACTIVE,
-    photos:allPhotos
     // Lock immutable/sensitive fields
   };
 
@@ -1237,5 +1258,6 @@ export const userService = {
   deleteAccount,
   verifySetPhone,
   getMyProfile,
-  setOrChangeUsername
+  setOrChangeUsername,
+  updateProfilePhoto
 };

@@ -138,6 +138,26 @@ if (req.files){
   });
 });
 
+const updateProfilePhoto = catchAsync (async (req:any, res:Response)=>{
+
+  const user = req.user
+  let images = null
+
+  if (req.files){
+    images = req.files.images
+  }
+
+  const result = await userService.updateProfilePhoto(user.id, images)
+
+
+  sendResponse(res, {
+    success:true,
+    statusCode:httpStatus.OK,
+    message:"Photo uploaded successfully",
+    data:result
+  })
+})
+
 // *! update user role and account status
 const getRandomUser = catchAsync(async (req: Request, res: Response) => {
 const id = req.params.id;
@@ -237,5 +257,6 @@ export const userController = {
   updateGenderVisibility,
   deleteUser,
   verifySetUserPhone,
-  getMyProfile
+  getMyProfile,
+  updateProfilePhoto
 };
