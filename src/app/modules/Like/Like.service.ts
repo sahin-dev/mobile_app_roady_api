@@ -218,16 +218,16 @@ const getAllMyLikeUsers = async (
   }
 
 
-  if (minDob || maxDob) {
-    andConditions.push({
-      receiver: {
-        dob: {
-          gte: minDob, 
-          lte: maxDob, 
-        },
-      },
-    });
-  }
+  // if (minDob || maxDob) {
+  //   andConditions.push({
+  //     receiver: {
+  //       dob: {
+  //         gte: minDob, 
+  //         lte: maxDob, 
+  //       },
+  //     },
+  //   });
+  // }
 
   // Final conditions
   const whereConditions: Prisma.LikeWhereInput = {
