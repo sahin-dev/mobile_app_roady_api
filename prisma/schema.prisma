@@ -12,16 +12,16 @@ model User {
   email             String?         
   phone             String?         
   username          String?         
-  dob               String?
+  dob               DateTime?
   age              Int?
   residence_country String?
   firstName         String?
   lastName          String?
   about             String?
-  interests         String[]
+  interests         InterestType[]
   budgetMin         Int?
   budgetMax         Int?
-  travelPartner     String?
+  travelPartner     TravelPartner?
   deleted           Boolean @default(false)
 
   boosted          Boolean @default(false)
@@ -32,11 +32,11 @@ model User {
   gender            GenderCategory?
 
   genderVisibility  Boolean?        @default(true)
-  tripType          String?
-  tripDuration      String?
+  tripType          TripType?
+  tripDuration      TripDuration?
   tripContinent  String?
   tripCountry String?
-  interestAgeGroup  String?
+  interestAgeGroup  AgeGroup?
   otp            String?
   otpExpiresIn   DateTime?
   status            UserStatus?     @default(INACTIVE)
@@ -266,7 +266,7 @@ model Room {
 type GenderCategory {
 
   label       String
-  sub_categories String[]
+  sub_categories GenderSubCategory[]
 
 }
 
