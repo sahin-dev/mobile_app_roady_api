@@ -1,4 +1,4 @@
-import { AgeGroup, Prisma, User, UserStatus } from "@prisma/client";
+import { AgeGroup, InterestType, Prisma, TravelPartner, TripDuration, TripType, User, UserStatus } from "@prisma/client";
 import * as bcrypt from "bcrypt";
 import { Request } from "express";
 import httpStatus from "http-status";
@@ -148,9 +148,105 @@ const createUserIntoDb = async (userId:string,payload:IUserUpdate) => {
   const age = payload.dob ? calculateAge(new Date(String(payload.dob))) : undefined;
   
   // Ensure dob is of type string (not String object)
+  // Map travelPartner string to enum if present
+  let travelPartnerEnum: TravelPartner | undefined = undefined;
+  if (payload.travelPartner) {
+    switch (payload.travelPartner) {
+      case "Womens":
+        travelPartnerEnum = TravelPartner.WOMENS;
+        break;
+      case "Mens":
+        travelPartnerEnum = TravelPartner.MENS;
+        break;
+      case "Non Binarys":
+        travelPartnerEnum = TravelPartner.NON_BINARIES;
+        break;
+      case "everyone":
+        travelPartnerEnum = TravelPartner.EVERYONE;
+        break;
+      default:
+        travelPartnerEnum = undefined;
+    }
+  }
+
+  // Map tripType string to enum if present
+  let tripTypeEnum: TripType | undefined = undefined;
+  if (payload.tripType) {
+    switch (payload.tripType) {
+      case "Backpack":
+        tripTypeEnum = TripType.BACKPACK;
+        break;
+      case "Sporting":
+        tripTypeEnum = TripType.SPORTING;
+        break;
+      case "Chill":
+        tripTypeEnum = TripType.CHILL;
+        break;
+      case "Luxe":
+        tripTypeEnum = TripType.LUXE;
+        break;
+      case "Business":
+        tripTypeEnum = TripType.BUSINESS;
+        break;
+      default:
+        tripTypeEnum = undefined;
+    }
+  }
+
+  // Map tripDuration string to enum if present
+  let tripDurationEnum: TripDuration | undefined = undefined;
+  if (payload.tripDuration) {
+    switch (payload.tripDuration) {
+      case "1-3 weeks":
+        tripDurationEnum = TripDuration.ONE_TO_THREE_WEEKS;
+        break;
+      case "1-3 months":
+        tripDurationEnum = TripDuration.ONE_TO_THREE_MONTHS;
+        break;
+      case "fewdays":
+        tripDurationEnum = TripDuration.FEWDAYS;
+        break;
+      case "6 months or more":
+        tripDurationEnum = TripDuration.SIX_MONTHS_OR_MORE;
+        break;
+      default:
+        tripDurationEnum = undefined;
+    }
+  }
+
+  // Map interestAgeGroup string to AgeGroup enum if present
+  let interestAgeGroupEnum: AgeGroup | undefined = undefined;
+  if (payload.interestAgeGroup) {
+    switch (payload.interestAgeGroup) {
+      case "18-25":
+        interestAgeGroupEnum = AgeGroup.EIGHTEEN_TO_TWENTYFIVE;
+        break;
+      case "25-35":
+        interestAgeGroupEnum = AgeGroup.TWENTYFIVE_TO_THIRTYFIVE;
+        break;
+      case "35-45":
+        interestAgeGroupEnum = AgeGroup.THIRTYFIVE_TO_FOURTYFIVE;
+        break;
+      case "45-60":
+        interestAgeGroupEnum = AgeGroup.FOURTYFIVE_TO_SIXTY;
+        break;
+      case "60 month or more":
+        interestAgeGroupEnum = AgeGroup.SIXY_TO_MORE;
+        break;
+      default:
+        interestAgeGroupEnum = undefined;
+    }
+  }
+
   const payloadToUpdate = {
     ...payload,
     dob: payload.dob ? String(payload.dob) : undefined,
+    // Convert interests to primitive string[] if present
+    interests: payload.interests ? payload.interests.map((i) => i.toString()) : undefined,
+    interestAgeGroup: interestAgeGroupEnum !== undefined ? interestAgeGroupEnum : undefined,
+    travelPartner: travelPartnerEnum !== undefined ? travelPartnerEnum : undefined,
+    tripType: tripTypeEnum !== undefined ? tripTypeEnum : undefined,
+    tripDuration: tripDurationEnum !== undefined ? tripDurationEnum : undefined,
   };
 
   const newUser = await prisma.user.update({where:{id:userId},
@@ -390,7 +486,7 @@ const updateUserIntoDb = async (payload: IUserUpdate, id: string) => {
       id: userInfo.id,
     },
     data: {
-      ...payload,
+      
       dob: payload.dob !== undefined ? String(payload.dob) : undefined,
       username: userInfo.username,
       email: userInfo.email,
@@ -457,6 +553,114 @@ const updateUser = async (payload: IUserUpdate, userId: string, files:Express.Mu
   let data = {
     
   }
+  
+// enum AgeGroup {
+  
+//   EIGHTEEN_TO_TWENTYFIVE
+//   TWENTYFIVE_TO_THIRTYFIVE
+//   THIRTYFIVE_TO_FOURTYFIVE
+//   FOURTYFIVE_TO_SIXTY
+//   SIXY_TO_MORE
+// }
+
+let ageGroup:AgeGroup | null = null
+let tripDuration:TripDuration | null= null
+
+let tripType:TripType | null = null
+
+let travelPartner: TravelPartner | null = null
+
+
+
+if (payload.travelPartner){
+  switch(payload.travelPartner){
+
+    case "Womens":
+      travelPartner = TravelPartner.WOMENS
+      break
+    case "Mens":
+      travelPartner = TravelPartner.MENS
+      break
+    case "Non binaries":
+      travelPartner = TravelPartner.NON_BINARIES
+      break
+    case "everyone":
+      travelPartner = TravelPartner.EVERYONE
+      break
+    default:
+      travelPartner = user.travelPartner
+  }
+}
+
+  if (payload.interestAgeGroup ){
+
+    switch(payload.interestAgeGroup){
+      case '18-25':
+        ageGroup = AgeGroup.EIGHTEEN_TO_TWENTYFIVE
+        break
+      case '25-35':
+        ageGroup = AgeGroup.THIRTYFIVE_TO_FOURTYFIVE
+        break
+      case "35-45":
+        ageGroup = AgeGroup.THIRTYFIVE_TO_FOURTYFIVE
+        break
+      case "45-60":
+        ageGroup = AgeGroup.FOURTYFIVE_TO_SIXTY
+        break
+      case "60+":
+        ageGroup = AgeGroup.SIXY_TO_MORE
+        break
+      default:
+        ageGroup = user.interestAgeGroup
+    }
+
+  }
+
+  if (payload.tripDuration){
+    switch (payload.tripDuration){
+      case "1-3 weeks":
+        tripDuration = TripDuration.ONE_TO_THREE_WEEKS
+        break
+      case "1-3 months":
+        tripDuration = TripDuration.ONE_TO_THREE_MONTHS
+        break
+      case "fewdays":
+        tripDuration = TripDuration.FEWDAYS
+        break
+      case "6+":
+         tripDuration = TripDuration.SIX_MONTHS_OR_MORE
+         break
+
+      default:
+        tripDuration = user.tripDuration
+
+    }
+  }
+
+
+  if (payload.tripType){
+    switch (payload.tripType){
+      case "Backpack":
+        tripType = TripType.BACKPACK
+        break
+      case "Sporting":
+        tripType = TripType.SPORTING
+        break
+      case "Chill":
+        tripType = TripType.CHILL
+        break
+      case "Luxe":
+        tripType = TripType.LUXE
+        break
+      case "Business":
+        tripType = TripType.BUSINESS
+        break
+      default:
+        tripType = user.tripType
+
+    }
+   
+  }
 
   
 
@@ -501,6 +705,16 @@ const updateUser = async (payload: IUserUpdate, userId: string, files:Express.Mu
     age = differenceInYears(new Date(), new Date(payload.dob.toString()));
   }
 
+  let interests: string[]
+
+  if (payload.interests){
+    interests = payload.interests as string[]
+  }else{
+    interests = user.interests as string[]
+  }
+
+
+
   const updatedUser = await prisma.user.update({
     where: { id: user.id },
     data: {
@@ -510,17 +724,21 @@ const updateUser = async (payload: IUserUpdate, userId: string, files:Express.Mu
       lastName: payload.lastName || user.lastName,
       dob: String(payload.dob) || user.dob,
       about: payload.about || user.about,
-      interests: payload.interests || user.interests,
+      interests: interests,
       budgetMax: payload.budgetMax || user.budgetMax,
       budgetMin : payload.budgetMin || user.budgetMin,
-      travelPartner : payload.travelPartner || user.travelPartner,
-      gender: payload.gender || user.gender,
+      travelPartner : travelPartner || user.travelPartner,
+      gender: payload.gender as {} || user.gender,
       genderVisibility : payload.genderVisibility || user.genderVisibility,
-      tripType : payload.tripType || user.tripType,
-      tripDuration : payload.tripDuration || user.tripDuration,
+      //done
+      tripType : tripType || user.tripType,
+      //done
+      tripDuration : tripDuration || user.tripDuration,
+
       tripContinent : payload.tripContinent || user.tripContinent,
        tripCountry: payload.tripCountry || user.tripCountry,
-       interestAgeGroup : payload.interestAgeGroup || user.interestAgeGroup,
+       //done
+       interestAgeGroup : ageGroup || user.interestAgeGroup,
        age:age
 
 

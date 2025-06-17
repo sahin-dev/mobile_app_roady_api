@@ -18,7 +18,7 @@ model User {
   firstName         String?
   lastName          String?
   about             String?
-  interests         InterestType[]
+  interests         String[]
   budgetMin         Int?
   budgetMax         Int?
   travelPartner     TravelPartner?
@@ -86,7 +86,7 @@ model User {
 
 type GenderDescription {
   label   String
-  sub_categories    GenderSubCategory[]
+  sub_categories    String[]
 
 }
 // model verifyPhoneOtp {
@@ -266,7 +266,7 @@ model Room {
 type GenderCategory {
 
   label       String
-  sub_categories GenderSubCategory[]
+  sub_categories String[]
 
 }
 

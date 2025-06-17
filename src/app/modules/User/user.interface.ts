@@ -36,20 +36,20 @@ export interface IUserUpdate {
   lastName?:string,
   dob?:String,
   about?:string,
-  interests?:InterestType[],
+  interests?:String[],
   budgetMin?:number,
   budgetMax?:number,
-  travelPartner?:TravelPartner,
+  travelPartner?:String,
   gender:{
-    label:GenderLabel,
-    sub_categories?:GenderSubCategory[]
+    label:String,
+    sub_categories?:String[]
   },
   genderVisibility?:boolean,
-  tripType?:TripType,
-  tripDuration?:TripDuration,
+  tripType?:String,
+  tripDuration?:String,
   tripContinent?:string,
   tripCountry?:string,
-  interestAgeGroup?:AgeGroup
+  interestAgeGroup?:String
   
 }
 
@@ -67,8 +67,8 @@ export interface IUser {
   budgetMax:number,
   travelPartne:TravelPartner,
  gender:{
-    label:GenderLabel,
-    sub_category?:GenderSubCategory[]
+    label:String,
+    sub_category?:String[]
   },
   tripType:TripType,
   tripDuration:TripDuration,
