@@ -12,7 +12,7 @@ model User {
   email             String?         
   phone             String?         
   username          String?         
-  dob               DateTime?
+  dob               String?
   age              Int?
   residence_country String?
   firstName         String?
