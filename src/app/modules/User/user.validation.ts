@@ -61,22 +61,22 @@ const userUpdateSchema = z.object({
   username: z.string().optional(),
   firstName:z.string().optional(),
   lastName:z.string().optional(),
-  dob:z.string({required_error:"Date of birth is required"}).optional(),
-  residence_country:z.string().nonempty("country is required").optional(),
+  dob:z.string().optional(),
+  residence_country:z.string().optional(),
   gender: z.object({
-    label:z.nativeEnum(GenderLabel),
-    sub_categories:z.array(z.nativeEnum(GenderSubCategory)).optional()
+    label:z.string(),
+    sub_categories:z.array(z.string()).optional()
   }).optional(),
-  tripPartner:z.nativeEnum(TravelPartner).optional(),
-  tripType:z.nativeEnum(TripType).optional(),
-  tripDuration:z.nativeEnum(TripDuration).optional(),
-  tripContinent:z.string().nonempty("Continent is required").optional(),
-  tripCountry:z.string().nonempty("Trip country is requred").optional(),
-  interestAgeGroup:z.string().nonempty("Age range is required").optional(),
-  interests:z.array(z.nativeEnum(InterestType)).optional(),
-  budgetMax:z.number({required_error:"budget max is required"}).optional(),
-  budgetMin:z.number({required_error:"Budget min is required"}).optional(),
-  about:z.string().nonempty("About must be provided").optional()
+  tripPartner:z.string().optional(),
+  tripType:z.string().optional(),
+  tripDuration:z.string().optional(),
+  tripContinent:z.string().optional(),
+  tripCountry:z.string().optional(),
+  interestAgeGroup:z.string().optional(),
+  interests:z.array(z.string()).optional(),
+  budgetMax:z.number().optional(),
+  budgetMin:z.number().optional(),
+  about:z.string().optional()
 });
 
 const checkEmailSchema = z.object({
