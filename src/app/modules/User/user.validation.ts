@@ -57,7 +57,7 @@ const UserLoginValidationSchema = z.object({
 
 const userUpdateSchema = z.object({
 
-  email:z.string().email().optional(),
+  email:z.string().optional(),
   username: z.string().optional(),
   firstName:z.string().optional(),
   lastName:z.string().optional(),

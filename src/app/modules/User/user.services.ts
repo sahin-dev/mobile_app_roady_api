@@ -247,6 +247,14 @@ const createUserIntoDb = async (userId:string,payload:IUserUpdate) => {
     travelPartner: travelPartnerEnum !== undefined ? travelPartnerEnum : undefined,
     tripType: tripTypeEnum !== undefined ? tripTypeEnum : undefined,
     tripDuration: tripDurationEnum !== undefined ? tripDurationEnum : undefined,
+    gender: payload.gender
+      ? {
+          label: typeof payload.gender.label === "string" ? payload.gender.label : String(payload.gender.label),
+          ...(payload.gender.sub_categories
+            ? { sub_categories: payload.gender.sub_categories.map((sc: any) => sc.toString()) }
+            : {}),
+        }
+      : undefined,
   };
 
   const newUser = await prisma.user.update({where:{id:userId},
