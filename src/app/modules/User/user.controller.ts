@@ -121,7 +121,7 @@ const updateGenderVisibility = catchAsync(async (req:Request, res:Response)=>{
 // *! update user role and account status
 const updateUser = catchAsync(async (req: any, res: Response) => {
 const user = req.user;
-const data = JSON.parse(req.body.data)
+const data = req.body
 
 let images = null
 
