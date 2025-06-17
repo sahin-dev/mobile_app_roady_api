@@ -554,7 +554,7 @@ const updateProfilePhoto = async (userId:string, files:Express.Multer.File[])=>{
 
   let allPhotos = user.photos.concat(urls)
 
-  const updatedUser = await prisma.user.update({where:{id:userId}, data:{photos: allPhotos}})
+  const updatedUser = await prisma.user.update({where:{id:user.id}, data:{photos: allPhotos}})
 
   return updatedUser
 
