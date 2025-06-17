@@ -454,6 +454,10 @@ const updateUser = async (payload: IUserUpdate, userId: string, files:Express.Mu
 
   let allPhotos = user.photos.concat(urls)
 
+  let data = {
+    
+  }
+
   
 
 
@@ -465,14 +469,62 @@ const updateUser = async (payload: IUserUpdate, userId: string, files:Express.Mu
     // Lock immutable/sensitive fields
   };
 
+  
+  // export interface IUserUpdate {
+  //   email?:string,
+  //   username?:string
+  //   firstName?:string,
+  //   lastName?:string,
+  //   dob?:String,
+  //   about?:string,
+  //   interests?:InterestType[],
+  //   budgetMin?:number,
+  //   budgetMax?:number,
+  //   travelPartner?:TravelPartner,
+  //   gender:{
+  //     label:GenderLabel,
+  //     sub_categories?:GenderSubCategory[]
+  //   },
+  //   genderVisibility?:boolean,
+  //   tripType?:TripType,
+  //   tripDuration?:TripDuration,
+  //   tripContinent?:string,
+  //   tripCountry?:string,
+  //   interestAgeGroup?:AgeGroup
+    
+  // }
+  
+
   // Auto-calculate age if dob is provided
+  let age
   if (payload.dob) {
-    updateData.age = differenceInYears(new Date(), new Date(payload.dob.toString()));
+    age = differenceInYears(new Date(), new Date(payload.dob.toString()));
   }
 
   const updatedUser = await prisma.user.update({
     where: { id: user.id },
-    data: {...updateData,},
+    data: {
+      username:payload.username || user.username,
+      email: payload.email || user.email,
+      firstName: payload.firstName || user.firstName,
+      lastName: payload.lastName || user.lastName,
+      dob: String(payload.dob) || user.dob,
+      about: payload.about || user.about,
+      interests: payload.interests || user.interests,
+      budgetMax: payload.budgetMax || user.budgetMax,
+      budgetMin : payload.budgetMin || user.budgetMin,
+      travelPartner : payload.travelPartner || user.travelPartner,
+      gender: payload.gender || user.gender,
+      genderVisibility : payload.genderVisibility || user.genderVisibility,
+      tripType : payload.tripType || user.tripType,
+      tripDuration : payload.tripDuration || user.tripDuration,
+      tripContinent : payload.tripContinent || user.tripContinent,
+       tripCountry: payload.tripCountry || user.tripCountry,
+       interestAgeGroup : payload.interestAgeGroup || user.interestAgeGroup,
+       age:age
+
+
+    },
     
   });
 
