@@ -635,7 +635,7 @@ if (payload.travelPartner){
       case "fewdays":
         tripDuration = TripDuration.FEWDAYS
         break
-      case "6+":
+      case "6 months or more":
          tripDuration = TripDuration.SIX_MONTHS_OR_MORE
          break
 
