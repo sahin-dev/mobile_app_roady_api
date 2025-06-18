@@ -71,7 +71,7 @@ const userUpdateSchema = z.object({
   tripType:z.string().optional(),
   tripDuration:z.string().optional(),
   tripContinent:z.string().optional(),
-  tripCountry:z.array(z.string()).optional(),
+  tripCountry:z.string().optional(),
   interestAgeGroup:z.string().optional(),
   interests:z.array(z.string()).optional(),
   budgetMax:z.number().optional(),
