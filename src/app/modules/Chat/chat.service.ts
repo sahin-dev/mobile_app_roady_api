@@ -55,7 +55,7 @@ const getChatFromDb = async (user: any, payload: any) => {
 
 const getMyRooms = async (user:any)=>{
 
-  const rooms = await prisma.room.findMany({where:{OR:[{senderId:user.id}, {receiverId:user.id}]}})
+  const rooms = await prisma.room.findMany({where:{OR:[{senderId:user.id}, {receiverId:user.id}]}, include:{sender:true, receiver:true}})
 
   return rooms
 }
