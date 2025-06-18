@@ -61,23 +61,6 @@ Clients must authenticate before using most features.
 
 ---
 
-#### 3. project
-
-**Client → Server**
-```
-{
-  "event": "project",
-  // ...other fields
-}
-```
-
-**Server → Client**
-```
-{
-  "parsedData": { /* original payload */ }
-}
-```
-
 ---
 
 #### 4. fetchChats
