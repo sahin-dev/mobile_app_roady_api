@@ -33,6 +33,7 @@ const sendSuperMessager = async (user:any, payload: any)=>{
   return {message:"super message sent."}
 }
 
+
 const getChatFromDb = async (user: any, payload: any) => {
   const chats = await prisma.chat.findMany({
     where: {
