@@ -53,9 +53,11 @@ const getChatFromDb = async (user: any, payload: any) => {
   return chats;
 };
 
-const getRoomById = async (user:any)=>{
+const getMyRooms = async (user:any)=>{
 
-  const rooms = await prisma.room.findMany({where:{}, include:{chat:true}})
+  const rooms = await prisma.room.findMany({where:{OR:[{senderId:user.id}, {receiverId:user.id}]}})
+
+  return rooms
 }
 
 const getChatByIdFromDb = async (user: any, id: string) => {
@@ -118,5 +120,6 @@ export const chatServices = {
   updateChatInDb,
   deleteChatFromDb,
   imageUpload,
-  sendSuperMessager
+  sendSuperMessager,
+  getMyRooms
 };

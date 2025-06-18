@@ -25,6 +25,7 @@ router.get(
   chatController.getChats
 );
 
+router.get("/rooms", auth(), chatController.getRooms)
 router.get(
   '/:id',
   auth(),

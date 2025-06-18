@@ -47,6 +47,18 @@ const getChats = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const getRooms = catchAsync( async (req:Request, res:Response)=>{
+  const user = req.user
+  const result = await chatServices.getMyRooms(user)
+
+  sendResponse(res, {
+    success:true,
+    data:result,
+    message:"Rooms fetched successfully",
+    statusCode:httpStatus.OK
+  })
+})
+
 const getChatById = catchAsync(async (req: Request, res: Response) => {
   const user = req.user;
   const result = await chatServices.getChatByIdFromDb(user, req.params.id);
@@ -111,7 +123,8 @@ export const chatController = {
   updateChat,
   deleteChat,
   imageUpload,
-  sendSuperMessage
+  sendSuperMessage,
+  getRooms
 };
 
 
