@@ -35,7 +35,7 @@ const setUserPhone  = async (id:string)=>{
   
   const otp = generateOtp()
   const expiresIn = new Date(Date.now()+ 5 * 60 * 1000)
-  await prisma.user.update({where:{id}, data:{otp, otpExpiresIn:expiresIn}})
+  await prisma.user.update({where:{id}, data:{otp, otpExpiresIn:expiresIn.toISOString()}})
   const emailSubject = "Your OTP for Account Verification";
   const emailHtml = generateOtpEmailHtml(user.email!, otp);
   if (user.email){
@@ -58,7 +58,7 @@ const verifySetPhone = async (id:string,otp:string, phone:string)=>{
   if (user.otp !== otp){
     throw new ApiError(httpStatus.BAD_REQUEST, "Invalid OTP")
   }
-  if (!user.otpExpiresIn || user.otpExpiresIn < new Date()){
+  if (!user.otpExpiresIn || new Date(user.otpExpiresIn) < new Date()){
     throw new ApiError(httpStatus.BAD_REQUEST, "OTP expired")
   }
   await prisma.user.update({where:{id}, data:{phone, otp:null, otpExpiresIn:null}})
@@ -1225,8 +1225,12 @@ const boostProfile = async (id:string, boostTime: number = 30) => {
     throw new ApiError(httpStatus.NOT_FOUND, "User not found")
   }
 
-  if ( !user.boosted || !user.boostedTill || user.boostedTill < new Date()){
-    throw new ApiError(httpStatus.BAD_REQUEST, "You have no boost.")
+  if (
+    !user.boosted ||
+    !user.boostedTill ||
+    new Date(user.boostedTill) < new Date()
+  ) {
+    throw new ApiError(httpStatus.BAD_REQUEST, "You have no boost.");
 
   }
  

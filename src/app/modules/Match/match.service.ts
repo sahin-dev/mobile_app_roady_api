@@ -31,7 +31,7 @@ const getMatchingUsres = async (userId:string, page:number = 1, limit:number = 1
     }
 
     const boostedUsers = await prisma.user.findMany({
-        where:{boosted:true,boostedTill:{lte:new Date()}, deleted:false, status:"ACTIVE", isCompleteProfile:true, id:{not:userId}, residence_country:{equals:targetUser.residence_country}},
+        where:{boosted:true,boostedTill:{lte:new Date().toISOString()}, deleted:false, status:"ACTIVE", isCompleteProfile:true, id:{not:userId}, residence_country:{equals:targetUser.residence_country}},
     })
   
   

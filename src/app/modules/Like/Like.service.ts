@@ -228,8 +228,8 @@ const getAllMyLikeUsers = async (
     andConditions.push({
       receiver: {
         dob: {
-          gte: minDob, 
-          lte: maxDob, 
+          gte: minDob ? minDob.toISOString() : undefined,
+          lte: maxDob ? maxDob.toISOString() : undefined,
         },
       },
     });
