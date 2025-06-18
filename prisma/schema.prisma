@@ -14,7 +14,7 @@ model User {
   username          String?         
   dob               DateTime?
   age              Int?
-  residence_country String?
+  residence_country String[]
   firstName         String?
   lastName          String?
   about             String?
