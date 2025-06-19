@@ -8,10 +8,12 @@ import httpStatus from "http-status";
 
 
 const getMatchingUsers = catchAsync(async (req:Request, res:Response)=>{
+  
     const userId = req.user.id
     const {page , limit} = req.query as {page:string, limit:string}
     
     const result = await matchService.getMatchingUsres(userId, parseInt(page), parseInt(limit))
+
     sendResponse(res, {
       statusCode: httpStatus.OK,
       success: true,

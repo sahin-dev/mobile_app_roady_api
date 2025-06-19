@@ -48,7 +48,7 @@ export interface IUserUpdate {
   tripType?:String,
   tripDuration?:String,
   tripContinent?:string,
-  tripCountry?:string,
+  tripCountry?:string[],
   interestAgeGroup?:String
   
 }
@@ -73,7 +73,7 @@ export interface IUser {
   tripType:TripType,
   tripDuration:TripDuration,
   tripContinent:string,
-  tripCountry:string,
+  tripCountry:string[],
   interestAgeGroup:AgeGroup
 }
 

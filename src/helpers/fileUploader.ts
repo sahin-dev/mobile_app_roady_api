@@ -31,7 +31,8 @@ cloudinary.config({
 
 // Multer configuration using memoryStorage (for DigitalOcean & Cloudinary)
 const storage = multer.memoryStorage();
-const upload = multer({ storage });
+//50mb
+const upload = multer({ storage ,limits:{fileSize:50 * 1024 * 1024}});
 
 // ✅ Fixed Cloudinary Storage
 const cloudinaryStorage = new CloudinaryStorage({

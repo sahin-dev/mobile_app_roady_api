@@ -35,7 +35,7 @@ model User {
   tripType          TripType?
   tripDuration      TripDuration?
   tripContinent  String?
-  tripCountry String?
+  tripCountry     String[]
   interestAgeGroup  AgeGroup?
   otp            String?
   otpExpiresIn   DateTime?
