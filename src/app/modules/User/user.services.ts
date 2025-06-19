@@ -540,6 +540,8 @@ const updateProfilePhoto = async (userId:string, files:Express.Multer.File[])=>{
 }
   let urls:string[] = [];
 
+  console.log(files)
+
 
   if (files && files.length > 0){
 
