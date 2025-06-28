@@ -18,8 +18,8 @@ const createTrip = catchAsync(async (req: Request, res: Response) => {
 );
 
 const getMyTrips = catchAsync(async (req: Request, res: Response) => {
-    const user = req.user;
-    const result = await tripServices.getMyTrips(user.id);
+    const {userId} = req.body;
+    const result = await tripServices.getMyTrips(userId);
     sendResponse(res, {
       statusCode: httpStatus.OK,
       success: true,
