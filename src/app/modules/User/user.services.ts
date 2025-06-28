@@ -1247,6 +1247,114 @@ const boostProfile = async (id:string, boostTime: number = 30) => {
 
 
 
+const updateUserProfileData = async (payload: IUserUpdate, userId: string, files: Express.Multer.File[]) => {
+  const user = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, `User not found with id: ${userId}`);
+  }
+
+  // Calculate age if dob is provided
+let dobDate;
+let age;
+if (payload.dob) {
+  // Ensure dob is a string in YYYY-MM-DD format
+  dobDate = new Date(payload.dob.toString()); // Convert string to Date
+
+  // Check if the date is valid
+  if (isNaN(dobDate.getTime())) {
+    throw new ApiError(httpStatus.BAD_REQUEST, 'Invalid date format for dob. Please use YYYY-MM-DD format.');
+  }
+
+  // Calculate age based on the dob
+  age = differenceInYears(new Date(), dobDate);
+}
+
+console.log(dobDate, "dobDate");
+
+
+  // Handle enum conversions
+  let ageGroup = user.interestAgeGroup;
+  if (payload.interestAgeGroup) {
+    switch(payload.interestAgeGroup) {
+      case '18-25': ageGroup = AgeGroup.EIGHTEEN_TO_TWENTYFIVE; break;
+      case '25-35': ageGroup = AgeGroup.TWENTYFIVE_TO_THIRTYFIVE; break;
+      case '35-45': ageGroup = AgeGroup.THIRTYFIVE_TO_FOURTYFIVE; break;
+      case '45-60': ageGroup = AgeGroup.FOURTYFIVE_TO_SIXTY; break;
+      case '60+': ageGroup = AgeGroup.SIXY_TO_MORE; break;
+      default: ageGroup = user.interestAgeGroup;
+    }
+  }
+
+  let tripDuration = user.tripDuration;
+  if (payload.tripDuration) {
+    switch(payload.tripDuration) {
+      case "1-3 weeks": tripDuration = TripDuration.ONE_TO_THREE_WEEKS; break;
+      case "1-3 months": tripDuration = TripDuration.ONE_TO_THREE_MONTHS; break;
+      case "fewdays": tripDuration = TripDuration.FEWDAYS; break;
+      case "6 months or more": tripDuration = TripDuration.SIX_MONTHS_OR_MORE; break;
+      default: tripDuration = user.tripDuration;
+    }
+  }
+
+  let tripType = user.tripType;
+  if (payload.tripType) {
+    switch(payload.tripType) {
+      case "Backpack": tripType = TripType.BACKPACK; break;
+      case "Sporting": tripType = TripType.SPORTING; break;
+      case "Chill": tripType = TripType.CHILL; break;
+      case "Luxe": tripType = TripType.LUXE; break;
+      case "Business": tripType = TripType.BUSINESS; break;
+      default: tripType = user.tripType;
+    }
+  }
+
+  let travelPartner = user.travelPartner;
+  if (payload.travelPartner) {
+    switch(payload.travelPartner) {
+      case "Womens": travelPartner = TravelPartner.WOMENS; break;
+      case "Mens": travelPartner = TravelPartner.MENS; break;
+      case "Non binaries": travelPartner = TravelPartner.NON_BINARIES; break;
+      case "everyone": travelPartner = TravelPartner.EVERYONE; break;
+      default: travelPartner = user.travelPartner;
+    }
+  }
+
+  // Prepare update data - only include fields that are provided in payload
+  const updateData: any = {
+    ...(payload.username && { username: payload.username }),
+    ...(payload.email && { email: payload.email }),
+    ...(payload.firstName && { firstName: payload.firstName }),
+    ...(payload.lastName && { lastName: payload.lastName }),
+    ...(payload.dob && { dob: dobDate, age }),
+    ...(payload.about && { about: payload.about }),
+    ...(payload.interests && { interests: payload.interests }),
+    ...(payload.budgetMin && { budgetMin: payload.budgetMin }),
+    ...(payload.budgetMax && { budgetMax: payload.budgetMax }),
+    ...(payload.travelPartner && { travelPartner }),
+    ...(payload.gender && { gender: payload.gender }),
+    ...(typeof payload.genderVisibility !== 'undefined' && { genderVisibility: payload.genderVisibility }),
+    ...(payload.tripType && { tripType }),
+    ...(payload.tripDuration && { tripDuration }),
+    ...(payload.tripContinent && { tripContinent: payload.tripContinent }),
+    ...(payload.tripCountry && { tripCountry: payload.tripCountry }),
+    ...(payload.interestAgeGroup && { interestAgeGroup: ageGroup }),
+  };
+
+  const updatedUser = await prisma.user.update({
+    where: { id: user.id },
+    data: updateData,
+  });
+
+  return updatedUser;
+};
+
+
+
+
+
 
 export const userService = {
   createUserIntoDb,
@@ -1265,5 +1373,6 @@ export const userService = {
   verifySetPhone,
   getMyProfile,
   setOrChangeUsername,
-  updateProfilePhoto
+  updateProfilePhoto,
+  updateUserProfileData
 };
