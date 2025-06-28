@@ -138,6 +138,25 @@ if (req.files){
   });
 });
 
+
+const updateUserProfileData = catchAsync(async (req: any, res: Response) => {
+  const user = req.user;
+  const data = req.body;
+  
+  let images = null;
+  if (req.files) {
+    images = req.files.images;
+  }
+
+  const result = await userService.updateUserProfileData(data, user.id, images);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "User updated successfully!",
+    data: result,
+  });
+});
+
 const updateProfilePhoto = catchAsync (async (req:any, res:Response)=>{
 
   const user = req.user
@@ -258,5 +277,6 @@ export const userController = {
   deleteUser,
   verifySetUserPhone,
   getMyProfile,
-  updateProfilePhoto
+  updateProfilePhoto,
+  updateUserProfileData
 };
