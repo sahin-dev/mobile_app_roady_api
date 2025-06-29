@@ -20,7 +20,7 @@ export const createTrip = async (id:string,payload:any) => {
 }
 
 
-const getMyTrips = async (id:string) => {
+const getUserTrips = async (id:string) => {
     const user = await prisma.user.findUnique({where:{id}})
     if (!user) {
         throw new ApiError(404, "User not found");
@@ -80,7 +80,7 @@ const imageUpload = async (files: Express.Multer.File[]) => {
   export const tripServices = {
     createTrip,
     imageUpload,
-    getMyTrips,
+    getUserTrips,
     getTripById,
     updateTrip
   }

@@ -12,6 +12,7 @@ const router = Router()
 router.post ('/', auth(),validateRequest(tripValidation.createTripSchema), tripController.createTrip)
 //read trips
 router.get('/', auth(), tripController.getMyTrips)
+router.get("/users/:userId",auth(), tripController.getUserTrips)
 //read a trip
 router.get('/:id',auth(), tripController.getTripById)
 //update a trip
