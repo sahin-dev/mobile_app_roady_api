@@ -22,6 +22,24 @@ const getMatchingUsers = catchAsync(async (req:Request, res:Response)=>{
     });
 })
 
+const addMatch = catchAsync(async (req:Request, res:Response)=>{
+
+})
+
+const getMatchings = catchAsync(async (req:Request, res:Response)=>{
+  const user = req.user
+
+  const matchings = await matchService.getMyMatches(user.id)
+
+  sendResponse(res,{
+    success:true,
+    statusCode:httpStatus.OK,
+    message:"Matching fetched successfully",
+    data:matchings
+  })
+})
+
 export const matchController = {
-    getMatchingUsers
+    getMatchingUsers,
+    getMatchings
 }

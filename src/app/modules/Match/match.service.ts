@@ -93,8 +93,24 @@ const getMatchingUsres = async (userId:string, page:number = 1, limit:number = 1
   return users
   
   }
+
+  const addMatch = async (user1:string, user2:string)=>{
+
+    const matched = await prisma.match.create({data:{user1,user2},include:{matchUser1:true,matchUser2:true}})
+
+    return matched
+
+  }
+
+  const getMyMatches = async (userId:string)=>{
+    const myMatching = await prisma.match.findMany({where:{OR:[{user1:userId}, {user2:userId}]}})
+
+    return myMatching
+  }
   
 
   export const matchService = { 
     getMatchingUsres,
+    addMatch,
+    getMyMatches
   }
