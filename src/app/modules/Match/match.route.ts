@@ -6,5 +6,6 @@ const router = Router();
 
 
 router.get("/match-user",auth(), matchController.getMatchingUsers);
+router.get("/", auth(), matchController.getMatchings)
 
 export const matchRoutes = router;

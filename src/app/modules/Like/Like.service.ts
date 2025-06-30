@@ -6,6 +6,7 @@ import { IUserFilterRequest } from "../User/user.interface";
 import { paginationHelper } from "../../../helpers/paginationHelper";
 import { IPaginationOptions } from "../../../interfaces/paginations";
 import { Prisma } from "@prisma/client";
+import { matchService } from "../Match/match.service";
 
 const toggleLike = async (id: string, user: any) => {
   const prismaTransaction = await prisma.$transaction(async (prisma) => {
@@ -83,6 +84,7 @@ const toggleLike = async (id: string, user: any) => {
     }
 
     if (result.matched){
+      await matchService.addMatch(id, user.id)
       
       await prisma.room.create({data:{senderId:user.id, receiverId:id}})
     }

@@ -10,6 +10,7 @@ import { User } from '@prisma/client';
 // Create Price
 const createPrice = catchAsync(async (req: Request, res: Response) => {
   const result = await PaymentService.createPrice(req.body);
+
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,
@@ -21,6 +22,7 @@ const createPrice = catchAsync(async (req: Request, res: Response) => {
 // Get All Prices
 const getAllPrices = catchAsync(async (req: Request, res: Response) => {
   const result = await PaymentService.getAllPrices();
+
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -32,6 +34,7 @@ const getAllPrices = catchAsync(async (req: Request, res: Response) => {
 // Get Price by ID
 const getPriceById = catchAsync(async (req: Request, res: Response) => {
   const result = await PaymentService.getPriceById(req.params.id);
+
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -61,6 +64,7 @@ const deletePrice = catchAsync(async (req: Request, res: Response) => {
     data: result,
   });
 });
+
 // buy subscription
 const buySubscription = catchAsync(async (req: Request, res: Response) => {
   const result = await PaymentService.buySubscription(req.body,req.user);

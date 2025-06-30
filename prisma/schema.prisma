@@ -82,6 +82,8 @@ model User {
   // otp                Otp
   @@map("users")
   Subscription Subscription[]
+  Match1 Match[] @relation(name: "matchUser1")
+  Match2 Match[] @relation(name: "matchUser2")
 }
 
 type GenderDescription {
@@ -246,6 +248,18 @@ model Chat {
   room       Room     @relation(fields: [roomId], references: [id])
 
   @@map("chats")
+}
+
+model Match {
+  id      String    @id @default(auto())  @map("_id")  @db.ObjectId
+  user1   String    @db.ObjectId
+  user2   String   @db.ObjectId
+  matchUser1   User   @relation(name: "matchUser1", fields: [user1], references: [id])
+  matchUser2   User    @relation(name: "matchUser2", fields: [user2], references: [id])
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
 }
 
 model Room {

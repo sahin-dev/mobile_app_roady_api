@@ -19,7 +19,20 @@ const createTrip = catchAsync(async (req: Request, res: Response) => {
 
 const getMyTrips = catchAsync(async (req: Request, res: Response) => {
     const user = req.user;
-    const result = await tripServices.getMyTrips(user.id);
+    const result = await tripServices.getUserTrips(user.id);
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: "Trips retrieved successfully",
+      data: result,
+    });
+  }
+);
+
+
+const getUserTrips = catchAsync(async (req: Request, res: Response) => {
+    const {userId} = req.params;
+    const result = await tripServices.getUserTrips(userId);
     sendResponse(res, {
       statusCode: httpStatus.OK,
       success: true,
@@ -68,5 +81,6 @@ const imageUpload = catchAsync(async (req: Request, res: Response) => {
     createTrip,
     getMyTrips,
     getTripById,
+    getUserTrips
     
   }
