@@ -251,16 +251,16 @@ model Chat {
 }
 
 model Match {
-  id      String    @id @default(auto())  @map("_id")  @db.ObjectId
-  user1   String    @db.ObjectId
-  user2   String   @db.ObjectId
-  matchUser1   User   @relation(name: "matchUser1", fields: [user1], references: [id])
-  matchUser2   User    @relation(name: "matchUser2", fields: [user2], references: [id])
+  id          String   @id @default(auto())  @map("_id")  @db.ObjectId
+  user1       String   @db.ObjectId
+  user2       String   @db.ObjectId
+  matchUser1  User     @relation(name: "matchUser1", fields: [user1], references: [id])
+  matchUser2  User     @relation(name: "matchUser2", fields: [user2], references: [id])
 
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-
 }
+
 
 model Room {
   id         String   @id @default(auto()) @map("_id") @db.ObjectId

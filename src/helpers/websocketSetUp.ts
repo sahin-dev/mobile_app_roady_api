@@ -39,11 +39,16 @@ export function setupWebSocket(server: Server) {
 
             if (!user) {
               console.log("Invalid token");
-              
+
               ws.close();
               return;
             }
-            ws.send(JSON.stringify({event:"authentication_status", data:{message:"User authenticated"}}))
+            ws.send(
+              JSON.stringify({
+                event: "authentication_status",
+                data: { message: "User authenticated" },
+              })
+            );
             const { id } = user;
 
             ws.userId = id;
@@ -57,6 +62,48 @@ export function setupWebSocket(server: Server) {
             break;
           }
 
+          // case "message": {
+          //   const { receiverId, message, images } = parsedData;
+
+          //   if (!ws.userId || !receiverId || !message) {
+          //     console.log("Invalid message payload");
+          //     return;
+          //   }
+
+          //   let room = await prisma.room.findFirst({
+          //     where: {
+          //       OR: [
+          //         { senderId: ws.userId, receiverId },
+          //         { senderId: receiverId, receiverId: ws.userId },
+          //       ],
+          //     },
+          //   });
+
+          //   if (!room) {
+          //     room = await prisma.room.create({
+          //       data: { senderId: ws.userId, receiverId },
+          //     });
+          //   }
+
+          //   const chat = await prisma.chat.create({
+          //     data: {
+          //       senderId: ws.userId,
+          //       receiverId,
+          //       roomId: room.id,
+          //       message,
+          //       images: { set: images || [] },
+          //     },
+          //   });
+
+          //   const receiverSocket = userSockets.get(receiverId);
+          //   if (receiverSocket) {
+          //     receiverSocket.send(
+          //       JSON.stringify({ event: "message", data: chat })
+          //     );
+          //   }
+          //   ws.send(JSON.stringify({ event: "message", data: chat }));
+          //   break;
+          // }
           case "message": {
             const { receiverId, message, images } = parsedData;
 
@@ -65,6 +112,7 @@ export function setupWebSocket(server: Server) {
               return;
             }
 
+            // Find the room where the conversation happens
             let room = await prisma.room.findFirst({
               where: {
                 OR: [
@@ -74,12 +122,14 @@ export function setupWebSocket(server: Server) {
               },
             });
 
+            // If the room doesn't exist, create a new one
             if (!room) {
               room = await prisma.room.create({
                 data: { senderId: ws.userId, receiverId },
               });
             }
 
+            // Create the chat message
             const chat = await prisma.chat.create({
               data: {
                 senderId: ws.userId,
@@ -90,15 +140,40 @@ export function setupWebSocket(server: Server) {
               },
             });
 
+            // Fetch all messages in the room
+            const chats = await prisma.chat.findMany({
+              where: { roomId: room.id },
+              orderBy: { createdAt: "asc" },
+            });
+
+            // Send the entire conversation (with new message included) to both the sender and receiver
             const receiverSocket = userSockets.get(receiverId);
             if (receiverSocket) {
               receiverSocket.send(
-                JSON.stringify({ event: "message", data: chat })
+                JSON.stringify({
+                  event: "message",
+                  data: {
+                    messages: chats, // Include the entire conversation
+                    newMessage: chat, // Include the newly sent message
+                  },
+                })
               );
             }
-            ws.send(JSON.stringify({ event: "message", data: chat }));
+
+            // Send the message data back to the sender, including all messages in the room
+            ws.send(
+              JSON.stringify({
+                event: "message",
+                data: {
+                  messages: chats, // Include the entire conversation
+                  newMessage: chat, // Include the newly sent message
+                },
+              })
+            );
+
             break;
           }
+
           case "project": {
             ws.send(JSON.stringify({ parsedData }));
             return;
@@ -216,10 +291,9 @@ export function setupWebSocket(server: Server) {
                   name: true,
                   id: true,
                   interests: true,
-                  favoritesFood:true,
+                  favoritesFood: true,
                   lat: true,
-                  long:true,
-                  
+                  long: true,
                 },
               });
 
