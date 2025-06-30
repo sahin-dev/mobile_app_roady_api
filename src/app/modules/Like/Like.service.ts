@@ -83,10 +83,36 @@ const toggleLike = async (id: string, user: any) => {
       };
     }
 
-    if (result.matched){
-      await matchService.addMatch(id, user.id)
+    // if (result.matched){
+    //   await matchService.addMatch(id, user.id)
       
-      await prisma.room.create({data:{senderId:user.id, receiverId:id}})
+    //   await prisma.room.create({data:{senderId:user.id, receiverId:id}})
+    // }
+
+    
+    // Check if a room already exists between the sender and receiver
+    if (result.matched) {
+      const existingRoom = await prisma.room.findFirst({
+        where: {
+          OR: [
+            { senderId: user.id, receiverId: id },
+            { senderId: id, receiverId: user.id },
+          ],
+        },
+      });
+
+      // If the room doesn't exist, create a new one
+      if (!existingRoom) {
+        await prisma.room.create({
+          data: {
+            senderId: user.id,
+            receiverId: id,
+          },
+        });
+      }
+
+      // Call addMatch service only if match was created
+      await matchService.addMatch(id, user.id);
     }
 
     return result;
