@@ -25,6 +25,13 @@ router.post(
     fileUploader.uploadMultipleImage,
     tripController.imageUpload
   );
+
+router.post(
+    '/create-trip',
+    auth(),
+    fileUploader.uploadMultipleImage,
+    tripController.createTripWithImage
+  );
   
   
 

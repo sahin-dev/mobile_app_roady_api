@@ -3,6 +3,7 @@ import catchAsync from "../../../shared/catchAsync";
 import httpStatus from "http-status";
 import { Request, Response } from "express";
 import { tripServices } from "./trip.service";
+import ApiError from "../../../errors/ApiError";
 
 
 const createTrip = catchAsync(async (req: Request, res: Response) => {  
@@ -16,6 +17,32 @@ const createTrip = catchAsync(async (req: Request, res: Response) => {
     });
   }
 );
+
+const createTripWithImage = catchAsync(async (req: Request, res: Response) => {  
+    const user = req.user;
+
+    // Check for image files in the request
+    const files = req.files
+        ? (req.files as { [fieldname: string]: Express.Multer.File[] })['images']
+        : [];
+
+    // Ensure images exist in the request
+    if (!Array.isArray(files) || files.length === 0) {
+        throw new ApiError(400, "No images uploaded");
+    }
+
+    // Call the createTrip service, passing the user ID, trip data, and files
+    const result = await tripServices.createTripWithImage(user.id, req.body, files);
+
+    // Send response with the created trip details
+    sendResponse(res, {
+        statusCode: httpStatus.OK,
+        success: true,
+        message: "Trip created successfully",
+        data: result,
+    });
+});
+
 
 const getMyTrips = catchAsync(async (req: Request, res: Response) => {
     const user = req.user;
@@ -81,6 +108,7 @@ const imageUpload = catchAsync(async (req: Request, res: Response) => {
     createTrip,
     getMyTrips,
     getTripById,
-    getUserTrips
+    getUserTrips,
+    createTripWithImage
     
   }

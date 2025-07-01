@@ -19,6 +19,64 @@ export const createTrip = async (id:string,payload:any) => {
     return trip
 }
 
+// export const createTripWithImage = async (id: string, payload: any, bodyData: any, files: Express.Multer.File[]) => {
+//     // Fetch the user
+//     const user = await prisma.user.findUnique({ where: { id } });
+//     if (!user) {
+//         throw new ApiError(404, "User not found");
+//     }
+
+
+
+//     // Check if images are provided and upload them
+//     let imageUrls: string[] = [];
+//     if (files && Array.isArray(files)) {
+//         imageUrls = await imageUpload(files); // Call the image upload function to get URLs
+//     }
+
+//     // Create the trip with image URLs included
+//     const trip = await prisma.trip.create({
+//         data: {
+//             ...payload,
+//             userId: id,
+//             images: imageUrls, // Store image URLs in the trip data
+//         },
+//     });
+
+//     return trip;
+// }
+
+export const createTripWithImage = async (id: string, payload: any, files: Express.Multer.File[]) => {
+    // Fetch the user
+    const user = await prisma.user.findUnique({ where: { id } });
+    if (!user) {
+        throw new ApiError(404, "User not found");
+    }
+
+    // Check if images are provided and upload them
+    let imageUrls: string[] = [];
+    if (files && Array.isArray(files)) {
+        imageUrls = await imageUpload(files); // Call the image upload function to get URLs
+    }
+
+    // Create the trip with image URLs and location data included
+    const trip = await prisma.trip.create({
+        data: {
+            name: payload.name,
+            description: payload.description,
+            location: {
+                latitude: parseFloat(payload.location.latitude),
+                longitude: parseFloat(payload.location.longitude),
+            },
+            userId: id,
+            images: imageUrls, // Store image URLs in the trip data
+        },
+    });
+
+    return trip;
+}
+
+
 
 const getUserTrips = async (id:string) => {
     const user = await prisma.user.findUnique({where:{id}})
@@ -82,5 +140,6 @@ const imageUpload = async (files: Express.Multer.File[]) => {
     imageUpload,
     getUserTrips,
     getTripById,
-    updateTrip
+    updateTrip,
+    createTripWithImage
   }
