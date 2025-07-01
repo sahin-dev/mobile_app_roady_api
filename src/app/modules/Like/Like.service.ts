@@ -463,6 +463,108 @@ const getPeerLikes = async (
 
   return peerLikes
 };
+
+
+//peer to peer relationship data
+const getPeerLikesData = async (
+  user: JwtPayload,
+  params: IUserFilterRequest,
+  options: IPaginationOptions
+) => {
+  const { page, limit, skip } = paginationHelper.calculatePagination(options);
+  const { searchTerm, minAge, maxAge, distanceRange = 40075, ...filterData } = params;
+
+  // Fetch the logged-in user's data
+  const authUser = await prisma.user.findUnique({
+    where: { id: user.id },
+    select: { id: true, name: true, email: true, photos: true },
+  });
+
+  if (!authUser) {
+    throw new ApiError(httpStatus.NOT_FOUND, "User not found");
+  }
+
+  // Fetch the peerLikes where the logged-in user is either the sender or receiver
+  const peerLikes = await prisma.like.findMany({
+    where: {
+      OR: [
+        {
+          senderId: user.id,
+          receiver: {
+            likesSent: {
+              some: {
+                receiverId: user.id,
+              },
+            },
+          },
+        },
+        {
+          receiverId: user.id,
+          sender: {
+            likesSent: {
+              some: {
+                senderId: user.id,
+              },
+            },
+          },
+        },
+      ],
+    },
+    include: {
+      receiver: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          photos: true, // Include photos
+        },
+      },
+      sender: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          photos: true, // Include photos
+        },
+      },
+    },
+  });
+
+  // Prepare the list of peer users, excluding the logged-in user
+  const filteredPeers = peerLikes.map(like => {
+    // Determine if the logged-in user is the sender or receiver
+    const peer = like.senderId === user.id ? like.receiver : like.sender;
+
+    // Check if photos exist, and pick the first photo if available
+    const photo = peer.photos && peer.photos.length > 0 ? peer.photos[0] : null;
+
+    // Return only the relevant data for the peer (excluding photos if none, or first photo if available)
+    return {
+      id: peer.id,
+      name: peer.name,
+      email: peer.email,
+      photo: photo, // Include first photo or null
+    };
+  });
+
+  // Add the current user's data at the start of the list
+  const userData = {
+    // ...authUser,
+    id: authUser.id,
+    name: authUser.name,
+    email: authUser.email,
+    isCurrentUser: true, // Flag to mark the current user's data
+    photo: authUser.photos && authUser.photos.length > 0 ? authUser.photos[0] : null, // Include the first photo or null
+  };
+
+  // Combine the current user's data with the filtered peers
+  const result = [userData, ...filteredPeers];
+
+  return result;
+};
+
+
+
 //test
 
 export const LikeService = {
@@ -470,5 +572,6 @@ export const LikeService = {
   getAllMyLikedIds,
   getWhoLikeMe,
   getAllMyLikeUsers,
-  getPeerLikes
+  getPeerLikes,
+  getPeerLikesData
 };

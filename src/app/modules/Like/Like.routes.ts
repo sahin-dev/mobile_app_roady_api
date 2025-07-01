@@ -37,4 +37,11 @@ router.get(
   likeController.getPeerLikes
 );
 
+// peers like
+router.get(
+  "/peer-likes-data",
+  auth(UserRole.ADMIN, UserRole.USER),
+  likeController.getPeerLikesData
+);
+
 export const likeRouter = router;

@@ -69,10 +69,27 @@ const getAllMyLikeUsers = catchAsync(async (req, res) => {
         data: result,
     });
 });
+
+  //get peer like users data
+  const getPeerLikesData = catchAsync(async (req, res) => {
+    const user = req.user;
+    const filters = pick(req.query, likeFilterableFields);
+    const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
+    const result = await LikeService.getPeerLikesData(user, filters, options);
+
+    sendResponse(res, {
+        success: true,
+        statusCode: 200,
+        message: "Peer likes retrieved successfully",
+        data: result,
+    });
+});
+
 export const likeController = {
     toggleLike,
     getAllMyLikeIds,
     getAllMyLikeUsers,
     getPeerLikes,
-    getWhoLikeMe
+    getWhoLikeMe,
+    getPeerLikesData
   };
